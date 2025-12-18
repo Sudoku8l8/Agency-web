@@ -1,0 +1,325 @@
+import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
+import { getFeaturedTours } from '../services/toursService'
+
+export default function Home() {
+    const { t } = useTranslation()
+    const [currentSlide, setCurrentSlide] = useState(0)
+    const [featuredTours, setFeaturedTours] = useState([])
+    const [loading, setLoading] = useState(true)
+
+    useEffect(() => {
+        loadFeaturedTours()
+    }, [])
+
+    const loadFeaturedTours = async () => {
+        try {
+            const tours = await getFeaturedTours()
+            // Filter only active tours
+            setFeaturedTours(tours.filter(t => t.isActive !== false))
+        } catch (error) {
+            console.error('Error loading featured tours:', error)
+            setFeaturedTours([])
+        } finally {
+            setLoading(false)
+        }
+    }
+
+    const heroImages = [
+        '/hero-cusco.jpg',
+        '/hero-rafting.jpg',
+        '/hero-ceremony.jpg'
+    ]
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentSlide((prev) => (prev + 1) % heroImages.length)
+        }, 5000)
+        return () => clearInterval(timer)
+    }, [])
+
+    return (
+        <div className="min-h-screen">
+            {/* Hero Section */}
+            <section className="relative h-screen overflow-hidden">
+                {/* Background Image Slider */}
+                <div className="absolute inset-0">
+                    {heroImages.map((img, index) => (
+                        <div
+                            key={index}
+                            className={`absolute inset-0 transition-opacity duration-1000 ${index === currentSlide ? 'opacity-100' : 'opacity-0'
+                                }`}
+                            style={{
+                                backgroundImage: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${img})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center'
+                            }}
+                        />
+                    ))}
+                </div>
+
+                {/* Hero Content */}
+                <div className="relative z-10 h-full flex items-center justify-center text-center px-4">
+                    <motion.div
+                        initial={{ opacity: 0, y: 30 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 1 }}
+                        className="max-w-4xl"
+                    >
+                        <h1 className="text-5xl md:text-7xl font-display font-bold text-white mb-6">
+                            {t('home.heroTitle')}
+                        </h1>
+                        <p className="text-xl md:text-2xl text-white/90 mb-8 font-light">
+                            {t('home.heroSubtitle')}
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <Link to="/tours" className="btn-primary text-lg px-8 py-4">
+                                {t('home.exploreTours')}
+                            </Link>
+                            <a href="#destacados" className="btn-secondary text-lg px-8 py-4 bg-white/10 backdrop-blur-md border-white text-white hover:bg-white hover:text-sacred-purple">
+                                {t('home.viewTours')}
+                            </a>
+                        </div>
+                    </motion.div>
+                </div>
+
+                {/* Scroll Indicator */}
+                <motion.div
+                    animate={{ y: [0, 10, 0] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                    className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-white"
+                >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                    </svg>
+                </motion.div>
+            </section>
+
+            {/* Quick Search - Improved */}
+            <section className="py-20 bg-gradient-to-br from-slate-900 via-sacred-purple to-mystic-teal relative overflow-hidden">
+                {/* Decorative elements */}
+                <div className="absolute inset-0 opacity-10">
+                    <div className="absolute top-10 left-10 w-72 h-72 bg-inca-gold rounded-full blur-3xl" />
+                    <div className="absolute bottom-10 right-10 w-96 h-96 bg-sunset-orange rounded-full blur-3xl" />
+                </div>
+
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className="text-center mb-12"
+                    >
+                        <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
+                            {t('home.quickSearch')}
+                        </h2>
+                        <p className="text-xl text-white/80">
+                            {t('home.exploreTours')}
+                        </p>
+                    </motion.div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        {[
+                            {
+                                name: 'Aventura',
+                                icon: '🏔️',
+                                gradient: 'from-red-500 to-orange-500',
+                                description: 'Adrenalina y emoción',
+                                image: '/tour-rafting.jpg'
+                            },
+                            {
+                                name: 'Arqueología',
+                                icon: '🏛️',
+                                gradient: 'from-amber-500 to-yellow-500',
+                                description: 'Historia ancestral',
+                                image: '/tour-valle.jpg'
+                            },
+                            {
+                                name: 'Místico',
+                                icon: '🔮',
+                                gradient: 'from-purple-500 to-pink-500',
+                                description: 'Conexión espiritual',
+                                image: '/tour-ayahuasca.jpg'
+                            },
+                            {
+                                name: 'Naturaleza',
+                                icon: '🌿',
+                                gradient: 'from-green-500 to-teal-500',
+                                description: 'Paisajes de ensueño',
+                                image: '/tour-horse.jpg'
+                            }
+                        ].map((category, index) => (
+                            <motion.div
+                                key={category.name}
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                <Link
+                                    to={`/tours?category=${category.name}`}
+                                    className="block group"
+                                >
+                                    <div className="relative h-64 rounded-2xl overflow-hidden shadow-2xl">
+                                        {/* Background Image */}
+                                        <div
+                                            className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-110"
+                                            style={{ backgroundImage: `url(${category.image})` }}
+                                        />
+
+                                        {/* Gradient Overlay */}
+                                        <div className={`absolute inset-0 bg-gradient-to-br ${category.gradient} opacity-80 group-hover:opacity-90 transition-opacity`} />
+
+                                        {/* Content */}
+                                        <div className="relative h-full flex flex-col items-center justify-center p-6 text-white">
+                                            <motion.div
+                                                whileHover={{ scale: 1.2, rotate: 5 }}
+                                                className="text-6xl mb-4 drop-shadow-lg"
+                                            >
+                                                {category.icon}
+                                            </motion.div>
+                                            <h3 className="text-2xl font-display font-bold mb-2 drop-shadow-md">
+                                                {category.name}
+                                            </h3>
+                                            <p className="text-sm opacity-90 drop-shadow-md">
+                                                {category.description}
+                                            </p>
+
+                                            {/* Hover Arrow */}
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10 }}
+                                                whileHover={{ opacity: 1, y: 0 }}
+                                                className="absolute bottom-4 right-4"
+                                            >
+                                                <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
+                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                                    </svg>
+                                                </div>
+                                            </motion.div>
+                                        </div>
+
+                                        {/* Shine effect on hover */}
+                                        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent transform -skew-x-12 translate-x-full group-hover:translate-x-[-200%] transition-transform duration-1000" />
+                                        </div>
+                                    </div>
+                                </Link>
+                            </motion.div>
+                        ))}
+                    </div>
+
+                    {/* View All Tours Button */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.5 }}
+                        className="text-center mt-12"
+                    >
+                        <Link
+                            to="/tours"
+                            className="inline-flex items-center gap-2 bg-white text-sacred-purple px-8 py-4 rounded-full font-semibold text-lg hover:bg-slate-100 transition-all hover:scale-105 shadow-xl"
+                        >
+                            Ver Todos los Tours
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </Link>
+                    </motion.div>
+                </div>
+            </section>
+
+            {/* Featured Experiences */}
+            <section id="destacados" className="py-20 bg-slate-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            className="text-center mb-16"
+                        >
+                            <h2 className="section-title mb-4">
+                                {t('home.whyChooseUs')}
+                            </h2>
+                        </motion.div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+                            {[
+                                {
+                                    icon: '🏔️',
+                                    title: 'Experiencia Local',
+                                    description: 'Guías nativos con conocimiento ancestral y pasión por compartir su cultura'
+                                },
+                                {
+                                    icon: '✨',
+                                    title: 'Experiencias Únicas',
+                                    description: 'Acceso exclusivo a ceremonias y lugares fuera de las rutas turísticas'
+                                },
+                                {
+                                    icon: '🛡️',
+                                    title: 'Seguridad Garantizada',
+                                    description: 'Equipos certificados y protocolos de seguridad en todas nuestras actividades'
+                                }
+                            ].map((feature, index) => (
+                                <motion.div
+                                    key={index}
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: index * 0.2 }}
+                                    className="text-center"
+                                >
+                                    <div className="text-6xl mb-4">{feature.icon}</div>
+                                    <h3 className="text-2xl font-display font-bold mb-3 text-sacred-purple">
+                                        {feature.title}
+                                    </h3>
+                                    <p className="text-slate-600">
+                                        {feature.description}
+                                    </p>
+                                </motion.div>
+                            ))}
+                        </div>
+                    </div>
+            </section >
+
+            {/* CTA Section */}
+            < section className="py-20 bg-gradient-to-r from-sacred-purple via-mystic-teal to-inca-gold" >
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                    >
+                        <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-6">
+                            {t('home.readyForAdventure')}
+                        </h2>
+                        <p className="text-xl text-white/90 mb-8">
+                            {t('home.readyForAdventureDesc')}
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                            <Link to="/checkout" className="bg-white text-sacred-purple px-8 py-4 rounded-lg font-semibold text-lg hover:bg-slate-100 transition-all hover:scale-105 shadow-xl">
+                                {t('home.bookYourTour')}
+                            </Link>
+                            <a
+                                href="https://wa.me/51984123456"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="glass-effect text-white px-8 py-4 rounded-lg font-semibold text-lg hover:bg-white/20 transition-all"
+                            >
+                                💬 WhatsApp
+                            </a>
+                        </div>
+                    </motion.div>
+                </div>
+            </section >
+        </div >
+    )
+}
