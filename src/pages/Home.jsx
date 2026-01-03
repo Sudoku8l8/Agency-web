@@ -272,7 +272,7 @@ export default function Home() {
             </section>
 
             {/* Quick Search - Improved */}
-            <section className="py-20 bg-gradient-to-br from-slate-900 via-andino-green to-andino-light-green relative overflow-hidden">
+            <section className="py-20 bg-gradient-to-br from-black via-gray-900 to-black relative overflow-hidden">
                 {/* Decorative elements */}
                 <div className="absolute inset-0 opacity-10">
                     <div className="absolute top-10 left-10 w-72 h-72 bg-andino-gold rounded-full blur-3xl" />
@@ -289,7 +289,7 @@ export default function Home() {
                         <h2 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
                             {t('home.quickSearch')}
                         </h2>
-                        <p className="text-xl text-white/80">
+                        <p className="text-xl text-white/90">
                             {t('home.exploreTours')}
                         </p>
                     </motion.div>
