@@ -24,7 +24,6 @@ export default function TourForm({ tour, onClose }) {
         included: [''],
         notIncluded: [''],
         recommendations: [''],
-        recommendations: [''],
         itinerary: [],
         isFeatured: false,
         badge: ''
@@ -48,7 +47,6 @@ export default function TourForm({ tour, onClose }) {
                 highlights: tour.highlights || [''],
                 included: tour.included || [''],
                 notIncluded: tour.notIncluded || [''],
-                recommendations: tour.recommendations || [''],
                 recommendations: tour.recommendations || [''],
                 itinerary: tour.itinerary || [],
                 isFeatured: tour.isFeatured || false,
